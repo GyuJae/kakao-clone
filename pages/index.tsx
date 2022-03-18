@@ -1,9 +1,11 @@
 import { useMutation } from "@apollo/client";
 import type { NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Layout from "../components/Layout";
 import LoadingSpiner from "../components/LoadingSpiner";
+import { authTokenVar, LOCALSTORAGE_TOKEN } from "../libs/client/apollo";
 import { LOGIN_MUTATION } from "../libs/server/mutations/login.gql";
 import {
   login,
@@ -22,13 +24,24 @@ const Home: NextPage = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
   } = useForm<ILogin>();
+
+  const router = useRouter();
 
   const [mutate, { loading }] = useMutation<login, loginVariables>(
     LOGIN_MUTATION,
     {
       onCompleted: ({ login: { ok, error, token } }) => {
-        console.log(ok, error, token);
+        if (ok && token) {
+          localStorage.setItem(LOCALSTORAGE_TOKEN, token);
+          authTokenVar(token);
+          router.replace("/user");
+        } else if (!ok && error) {
+          setError("stateError", {
+            message: error,
+          });
+        }
       },
     }
   );
@@ -87,6 +100,13 @@ const Home: NextPage = () => {
             <button type={"submit"} className={style.type}>
               {loading ? <LoadingSpiner /> : "로그인"}
             </button>
+            <div className="flex justify-center items-center py-5">
+              {errors.stateError && (
+                <span className="text-sm font-semibold text-red-600">
+                  {errors.stateError.message}
+                </span>
+              )}
+            </div>
           </form>
         </div>
         <div className="flex justify-center">

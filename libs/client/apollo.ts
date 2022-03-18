@@ -6,10 +6,10 @@ import {
   split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
+// import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+// import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-//import { WebSocketLink } from "apollo-link-ws";
+import { WebSocketLink } from "apollo-link-ws";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
@@ -30,23 +30,23 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const wsLink = new GraphQLWsLink(
-  createClient({
-    url: "ws://localhost:4000/subscriptions",
-  })
-);
+// const wsLink = new GraphQLWsLink(
+//   createClient({
+//     url: "ws://localhost:4000/graphql",
+//   })
+// );
 
-// const wsLink = process.browser
-//   ? new WebSocketLink({
-//       uri: `ws://localhost:4000/graphql`,
-//       options: {
-//         reconnect: true,
-//         connectionParams: {
-//           "x-jwt": authTokenVar() || "",
-//         },
-//       },
-//     })
-//   : null;
+const wsLink = process.browser
+  ? new WebSocketLink({
+      uri: `ws://localhost:4000/graphql`,
+      options: {
+        reconnect: true,
+        connectionParams: {
+          "x-jwt": authTokenVar() || "",
+        },
+      },
+    })
+  : null;
 
 // const wsLink = new GraphQLWsLink(
 //   createClient({
@@ -57,17 +57,20 @@ const wsLink = new GraphQLWsLink(
 //   })
 // );
 
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
-  },
-  wsLink,
-  authLink.concat(httpLink)
-);
+const splitLink = process.browser
+  ? split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
+      },
+      // @ts-ignore
+      wsLink,
+      authLink.concat(httpLink)
+    )
+  : authLink.concat(httpLink);
 
 export const client = new ApolloClient({
   link: splitLink,
