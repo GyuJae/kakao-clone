@@ -1,11 +1,9 @@
-interface ILoadingSpiner {
-  size?: number;
-}
+interface ILoadingSpiner {}
 
-const LoadingSpiner: React.FC<ILoadingSpiner> = ({ size = 4 }) => {
+const LoadingSpiner: React.FC<ILoadingSpiner> = () => {
   return (
     <svg
-      className={`animate-spin -ml-1 mr-3 h-${size} w-${size} text-white`}
+      className={"animate-spin -ml-1 mr-3 h-4 w-4 text-gray-500"}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

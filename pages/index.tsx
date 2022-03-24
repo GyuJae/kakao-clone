@@ -65,7 +65,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <Layout seoTitle="Login">
+    <Layout isAuthPage seoTitle="Login">
       <div className="pb-80">
         <div className="flex justify-center items-center pt-20 pb-10">
           <svg
