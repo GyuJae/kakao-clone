@@ -18,6 +18,10 @@ export interface LoginInput {
   password: string;
 }
 
+export interface SearchFriendsInput {
+  keyword: string;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
