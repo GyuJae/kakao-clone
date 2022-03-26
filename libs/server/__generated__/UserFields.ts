@@ -14,4 +14,6 @@ export interface UserFields {
   avatar: string | null;
   statusMessage: string | null;
   bgImg: string | null;
+  isMe: boolean;
+  isMyFriend: boolean;
 }

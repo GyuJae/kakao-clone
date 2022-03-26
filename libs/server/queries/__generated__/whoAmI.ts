@@ -14,6 +14,8 @@ export interface whoAmI_whoAmI {
   avatar: string | null;
   statusMessage: string | null;
   bgImg: string | null;
+  isMe: boolean;
+  isMyFriend: boolean;
 }
 
 export interface whoAmI {

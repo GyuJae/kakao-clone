@@ -7,5 +7,7 @@ export const USER_FIELDS = gql`
     avatar
     statusMessage
     bgImg
+    isMe
+    isMyFriend
   }
 `;
