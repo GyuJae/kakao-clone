@@ -3,26 +3,26 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import AddFriendModal from "../../components/AddFriendModal";
-import Avatar from "../../components/Avatar";
-import Friend from "../../components/Friend";
-import Layout from "../../components/Layout";
-import LoadingSpiner from "../../components/LoadingSpiner";
-import useUser from "../../libs/client/hooks/useUser";
+import AddFriendModal from "@components/AddFriendModal";
+import Avatar from "@components/Avatar";
+import Friend from "@components/Friend";
+import Layout from "@components/Layout";
+import LoadingSpiner from "@components/LoadingSpiner";
+import useUser from "@libs/client/hooks/useUser";
 
-import { CREATE_FRIENDS_MUTATION } from "../../libs/server/mutations/create-friends.gql";
+import { CREATE_FRIENDS_MUTATION } from "@libs/server/mutations/create-friends.gql";
 import {
   createFriends,
   createFriendsVariables,
-} from "../../libs/server/mutations/__generated__/createFriends";
-import { SEARCH_FRIENDS_QUERY } from "../../libs/server/queries/searchFriends.gql";
-import { SEE_FRIENDS_QUERY } from "../../libs/server/queries/seeFriends.gql";
+} from "@libs/server/mutations/__generated__/createFriends";
+import { SEARCH_FRIENDS_QUERY } from "@libs/server/queries/searchFriends.gql";
+import { SEE_FRIENDS_QUERY } from "@libs/server/queries/seeFriends.gql";
 import {
   searchFriends,
   searchFriendsVariables,
   searchFriends_searchFriends_users,
-} from "../../libs/server/queries/__generated__/searchFriends";
-import { seeFriends } from "../../libs/server/queries/__generated__/seeFriends";
+} from "@libs/server/queries/__generated__/searchFriends";
+import { seeFriends } from "@libs/server/queries/__generated__/seeFriends";
 
 export interface ISearchFriends {
   keyword: string;

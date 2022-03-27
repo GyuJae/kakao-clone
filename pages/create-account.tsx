@@ -3,13 +3,13 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Layout from "../components/Layout";
-import LoadingSpiner from "../components/LoadingSpiner";
-import { CREATEACCOUNT_MUTATION } from "../libs/server/mutations/create-account.gql";
+import Layout from "@components/Layout";
+import LoadingSpiner from "@components/LoadingSpiner";
+import { CREATEACCOUNT_MUTATION } from "@libs/server/mutations/create-account.gql";
 import {
   createAccount,
   createAccountVariables,
-} from "../libs/server/mutations/__generated__/createAccount";
+} from "@libs/server/mutations/__generated__/createAccount";
 
 interface ICreateAccount {
   name: string;

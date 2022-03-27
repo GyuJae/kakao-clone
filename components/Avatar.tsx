@@ -1,7 +1,7 @@
 import { cls } from "../libs/client/utils";
 
 interface IAvatar {
-  size: "ME" | "FRIEND" | "ADD_FRIEND" | "DETAIL";
+  size: "ME" | "FRIEND" | "ADD_FRIEND" | "DETAIL" | "ROOM";
 }
 
 const Avatar: React.FC<IAvatar> = ({ size }) => {
@@ -15,12 +15,17 @@ const Avatar: React.FC<IAvatar> = ({ size }) => {
           ? "w-10 h-10"
           : size === "DETAIL"
           ? "w-20 h-20"
+          : size === "ROOM"
+          ? "w-5 h-5"
           : "w-8 h-8"
       )}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="text-gray-300 h-6 w-6"
+        className={cls(
+          "text-gray-300",
+          size === "ROOM" ? "w-3 h-3" : "h-6 w-6"
+        )}
         viewBox="0 0 20 20"
         fill="currentColor"
       >

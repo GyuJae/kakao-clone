@@ -3,14 +3,14 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Layout from "../components/Layout";
-import LoadingSpiner from "../components/LoadingSpiner";
-import { authTokenVar, LOCALSTORAGE_TOKEN } from "../libs/client/apollo";
-import { LOGIN_MUTATION } from "../libs/server/mutations/login.gql";
+import Layout from "@components/Layout";
+import LoadingSpiner from "@components/LoadingSpiner";
+import { authTokenVar, LOCALSTORAGE_TOKEN } from "@libs/client/apollo";
+import { LOGIN_MUTATION } from "@libs/server/mutations/login.gql";
 import {
   login,
   loginVariables,
-} from "../libs/server/mutations/__generated__/login";
+} from "@libs/server/mutations/__generated__/login";
 
 interface ILogin {
   email: string;
