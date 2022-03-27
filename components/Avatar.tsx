@@ -1,7 +1,7 @@
 import { cls } from "../libs/client/utils";
 
 interface IAvatar {
-  size: "ME" | "FRIEND" | "ADD_FRIEND";
+  size: "ME" | "FRIEND" | "ADD_FRIEND" | "DETAIL";
 }
 
 const Avatar: React.FC<IAvatar> = ({ size }) => {
@@ -13,6 +13,8 @@ const Avatar: React.FC<IAvatar> = ({ size }) => {
           ? "w-12 h-12"
           : size === "FRIEND"
           ? "w-10 h-10"
+          : size === "DETAIL"
+          ? "w-20 h-20"
           : "w-8 h-8"
       )}
     >

@@ -1,13 +1,15 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import AddFriendModal from "../../components/AddFriendModal";
 import Avatar from "../../components/Avatar";
 import Friend from "../../components/Friend";
 import Layout from "../../components/Layout";
 import LoadingSpiner from "../../components/LoadingSpiner";
 import useUser from "../../libs/client/hooks/useUser";
-import { cls } from "../../libs/client/utils";
+
 import { CREATE_FRIENDS_MUTATION } from "../../libs/server/mutations/create-friends.gql";
 import {
   createFriends,
@@ -22,7 +24,7 @@ import {
 } from "../../libs/server/queries/__generated__/searchFriends";
 import { seeFriends } from "../../libs/server/queries/__generated__/seeFriends";
 
-interface ISearchFriends {
+export interface ISearchFriends {
   keyword: string;
 }
 
@@ -36,7 +38,6 @@ const Index: NextPage = () => {
   const [addFriendModal, setAddFriendModal] = useState<boolean>(false);
 
   const { register, watch } = useForm<ISearchFriends>();
-
   const { data: searchFriendsData, loading: searchFriendsLoading } = useQuery<
     searchFriends,
     searchFriendsVariables
@@ -50,7 +51,7 @@ const Index: NextPage = () => {
 
   const keywordLen = watch("keyword")?.length || 0;
 
-  const [showFriends, setShowFriends] = useState<boolean>(false);
+  const [showFriends, setShowFriends] = useState<boolean>(true);
 
   const [makeFriendList, setMakeFriendList] = useState<
     searchFriends_searchFriends_users[]
@@ -71,7 +72,7 @@ const Index: NextPage = () => {
     createFriends,
     createFriendsVariables
   >(CREATE_FRIENDS_MUTATION, {
-    refetchQueries: [SEARCH_FRIENDS_QUERY, "searchFriends"],
+    refetchQueries: [SEE_FRIENDS_QUERY, "seeFriends"],
   });
 
   const onClicksCreateFriends = () => {
@@ -83,8 +84,16 @@ const Index: NextPage = () => {
         },
       },
     });
+
     setAddFriendModal(() => false);
+    setMakeFriendList(() => []);
   };
+
+  const router = useRouter();
+
+  const {
+    query: { id: userId },
+  } = router;
 
   return (
     <Layout seoTitle="Home">
@@ -95,118 +104,18 @@ const Index: NextPage = () => {
       ) : (
         <div className="py-4">
           {addFriendModal && (
-            <div className="absolute top-0 left-0 bg-black/40 w-full h-full flex justify-center items-baseline">
-              <div className="w-80 top-10 bg-white mt-20 px-2 z-10 shadow-lg rounded-sm">
-                <div className="flex justify-end py-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-400 hover:text-black"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    onClick={() => setAddFriendModal(false)}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="p-2 pb-10">
-                  <div className="text-lg mb-5">친구 추가</div>
-                  <form className="flex items-center relative">
-                    <input
-                      {...register("keyword", {
-                        required: true,
-                        maxLength: 20,
-                      })}
-                      className="w-full border-black border-b-[1px] focus:outline-none"
-                      autoComplete="off"
-                      maxLength={20}
-                    />
-                    <div className="text-xs text-gray-500 absolute right-0">
-                      {keywordLen} / 20
-                    </div>
-                  </form>
-                  <div>
-                    {searchFriendsLoading ? (
-                      <div className="flex justify-center items-center pt-10">
-                        <LoadingSpiner />
-                      </div>
-                    ) : (
-                      <div className="mt-5">
-                        {searchFriendsData?.searchFriends.users?.length ===
-                        0 ? (
-                          <div className="flex justify-center items-center">
-                            <span className="text-sm text-gray-600">
-                              No Result
-                            </span>
-                          </div>
-                        ) : (
-                          searchFriendsData?.searchFriends.users?.map(
-                            (user) => (
-                              <div
-                                key={user.id}
-                                onClick={() => onClickFriendList(user)}
-                              >
-                                <Friend friend={user} />
-                              </div>
-                            )
-                          )
-                        )}
-                        {makeFriendList.length > 0 && (
-                          <div>
-                            <div className="flex space-x-3 mt-2">
-                              {makeFriendList.map((friend) => (
-                                <div key={friend.id}>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-2 w-2 bg-gray-100 rounded-full  text-gray-500 hover:text-black"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    onClick={() =>
-                                      setMakeFriendList((prev) =>
-                                        prev.filter((u) => u.id !== friend.id)
-                                      )
-                                    }
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                  <Avatar size={"ADD_FRIEND"} />
-                                  <div className="flex justify-center">
-                                    <span className="text-[6px] text-center">
-                                      {friend.name}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            <div className="flex justify-end">
-                              <div
-                                onClick={onClicksCreateFriends}
-                                className="bg-yellow-400 flex justify-center items-center w-16 text-xs p-1 rounded-sm hover:bg-yellow-500 cursor-pointer"
-                              >
-                                {createFriendsLoading ? (
-                                  <div className="ml-4">
-                                    <LoadingSpiner />
-                                  </div>
-                                ) : (
-                                  "친구 추가"
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AddFriendModal
+              setAddFriendModal={setAddFriendModal}
+              register={register}
+              keywordLen={keywordLen}
+              searchFriendsLoading={searchFriendsLoading}
+              onClickFriendList={onClickFriendList}
+              users={searchFriendsData?.searchFriends.users}
+              makeFriendList={makeFriendList}
+              setMakeFriendList={setMakeFriendList}
+              onClicksCreateFriends={onClicksCreateFriends}
+              createFriendsLoading={createFriendsLoading}
+            />
           )}
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold">친구</h1>
@@ -300,6 +209,60 @@ const Index: NextPage = () => {
               )}
             </div>
           </div>
+          {userId && (
+            <div className="absolute bg-black/80 top-0 left-0 w-full h-full flex flex-col justify-end ">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7 text-gray-400 hover:text-gray-500 absolute top-5 right-5 cursor-pointer"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                onClick={() => router.back()}
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="h-64 w-full  z-10 flex flex-col justify-evenly items-center mb-10">
+                <div className="flex w-full justify-center pb-5 border-b-[0.5px]">
+                  <Avatar size={"DETAIL"} />
+                </div>
+                <div className="flex justify-around space-x-10">
+                  {userId !== whoAmIData?.whoAmI.id + "" && (
+                    <div className="flex flex-col justify-center items-center space-y-2 hover:opacity-90">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8 text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="text-xs text-white">채팅하기</span>
+                    </div>
+                  )}
+                  {userId === whoAmIData?.whoAmI.id + "" && (
+                    <div className="flex flex-col justify-center items-center space-y-2 hover:opacity-90">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8 text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      <span className="text-xs text-white">프로필 관리</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Layout>
