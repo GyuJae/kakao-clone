@@ -17,6 +17,10 @@ export interface CreateFriendsInput {
   friendIds: number[];
 }
 
+export interface CreateRoomInput {
+  userIds: number[];
+}
+
 export interface LoginInput {
   email: string;
   password: string;

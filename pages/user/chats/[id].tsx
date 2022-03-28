@@ -49,6 +49,7 @@ const ChatDetail: NextPage = () => {
             </a>
           </Link>
         </div>
+
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <LoadingSpiner />
