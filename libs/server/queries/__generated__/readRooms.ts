@@ -14,10 +14,17 @@ export interface readRooms_readRooms_rooms_users {
   avatar: string | null;
 }
 
+export interface readRooms_readRooms_rooms_messages {
+  __typename: "MessageEntity";
+  id: number;
+  payload: string;
+}
+
 export interface readRooms_readRooms_rooms {
   __typename: "RoomWithUsers";
   id: number;
   users: readRooms_readRooms_rooms_users[];
+  messages: readRooms_readRooms_rooms_messages[] | null;
 }
 
 export interface readRooms_readRooms {

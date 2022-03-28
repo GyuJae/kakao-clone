@@ -10,6 +10,10 @@ export const READ_ROOMS_QUERY = gql`
           name
           avatar
         }
+        messages {
+          id
+          payload
+        }
       }
     }
   }

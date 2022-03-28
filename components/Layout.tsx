@@ -8,19 +8,23 @@ interface ILayout {
   children: React.ReactChild;
   seoTitle: string;
   isAuthPage?: boolean;
+  hasStatusBar?: boolean;
+  isChatPage?: boolean;
 }
 
 const Layout: React.FC<ILayout> = ({
   children,
   seoTitle,
   isAuthPage = false,
+  isChatPage = false,
+  hasStatusBar = true,
 }) => {
   const router = useRouter();
   return (
     <div
       className={cls(
         "flex flex-col justify-center items-center",
-        isAuthPage ? "bg-yellow-300" : "bg-white"
+        isAuthPage ? "bg-yellow-300" : isChatPage ? "bg-sky-500" : "bg-white"
       )}
     >
       <Head>
@@ -28,7 +32,7 @@ const Layout: React.FC<ILayout> = ({
       </Head>
       <div className="min-w-[480px]">
         <main>{children}</main>
-        {!isAuthPage && (
+        {!isAuthPage && hasStatusBar && (
           <footer className="fixed bottom-0 left-0 w-full bg-gray-100 flex justify-around py-2">
             <FooterIcon current={router.pathname === "/user"}>
               <Link href={"/user"}>

@@ -22,6 +22,10 @@ export interface LoginInput {
   password: string;
 }
 
+export interface ReadMessagesInput {
+  roomId: number;
+}
+
 export interface SearchFriendsInput {
   keyword: string;
 }
