@@ -34,6 +34,15 @@ export interface SearchFriendsInput {
   keyword: string;
 }
 
+export interface SendMessageInput {
+  roomId: number;
+  payload: string;
+}
+
+export interface TakeMessageInput {
+  roomId: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

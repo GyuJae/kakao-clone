@@ -1,16 +1,30 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import Avatar from "@components/Avatar";
 import Layout from "@components/Layout";
 import LoadingSpiner from "@components/LoadingSpiner";
+import Message from "@components/Message";
 import useUser from "@libs/client/hooks/useUser";
+import { SEND_MESSAGE_MUTATION } from "@libs/server/mutations/send-message-gql";
+import {
+  sendMessage,
+  sendMessageVariables,
+} from "@libs/server/mutations/__generated__/sendMessage";
 import { READ_MESSAGES_QUERY } from "@libs/server/queries/readMessages.gql";
 import {
   readMessages,
   readMessagesVariables,
+  readMessages_readMessages_messages,
 } from "@libs/server/queries/__generated__/readMessages";
+import { TAKE_MESSAGE_SUBSCRIPTION } from "@libs/server/subscriptions/take-message.gql";
 import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+interface ISendMessage {
+  payload: string;
+}
 
 const ChatDetail: NextPage = () => {
   const router = useRouter();
@@ -18,16 +32,61 @@ const ChatDetail: NextPage = () => {
   const {
     query: { id },
   } = router;
-  const { data, loading } = useQuery<readMessages, readMessagesVariables>(
-    READ_MESSAGES_QUERY,
-    {
+  const { data, loading, subscribeToMore } = useQuery<
+    readMessages,
+    readMessagesVariables
+  >(READ_MESSAGES_QUERY, {
+    variables: {
+      input: {
+        roomId: +(id as string),
+      },
+    },
+    // pollInterval: 500,
+  });
+
+  const [sendMessageMutate, { loading: sendMessageLoading }] = useMutation<
+    sendMessage,
+    sendMessageVariables
+  >(SEND_MESSAGE_MUTATION, {
+    onCompleted: () => {
+      reset();
+    },
+  });
+
+  const { register, handleSubmit, reset } = useForm<ISendMessage>();
+
+  const onSubmit: SubmitHandler<ISendMessage> = ({ payload }) => {
+    sendMessageMutate({
       variables: {
         input: {
+          payload,
           roomId: +(id as string),
         },
       },
-    }
-  );
+    });
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    subscribeToMore({
+      document: TAKE_MESSAGE_SUBSCRIPTION,
+      variables: { input: { roomId: +(id as string) } },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        const newMessage = subscriptionData.data.takeMessage;
+        return Object.assign({}, prev, {
+          readMessages: {
+            messages: [
+              ...(prev.readMessages
+                .messages as readMessages_readMessages_messages[]),
+              newMessage,
+            ],
+          },
+        });
+      },
+    });
+  }, [id, subscribeToMore]);
+
   return (
     <Layout seoTitle="Chats" hasStatusBar={false} isChatPage>
       <div>
@@ -56,57 +115,31 @@ const ChatDetail: NextPage = () => {
           </div>
         ) : (
           <div className="relative grid grid-rows-5 mt-16">
-            <div className="h-full px-2 pb-36  row-span-4 space-y-2">
-              {data?.readMessages.messages?.map((message, idx) =>
-                message.user.id !== meData?.whoAmI.id ? (
-                  <div key={message.id} className="flex">
-                    {idx === 0 && (
-                      <div className="flex space-x-2">
-                        <Avatar size={"FRIEND"} />
-                        <div>
-                          <div className="text-sm">{message.user.name} </div>
-                          <div className="bg-white  px-1 rounded-sm shadow-sm mt-1">
-                            {message.payload}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {idx !== 0 &&
-                    data.readMessages.messages &&
-                    data.readMessages.messages[idx - 1].user.id !==
-                      message.user.id ? (
-                      <div className="flex space-x-2">
-                        {message.user.id !== meData?.whoAmI.id && (
-                          <Avatar size={"FRIEND"} />
-                        )}
-                        <div>
-                          <div className="text-sm">{message.user.name} </div>
-                          <div className="bg-white  px-1 rounded-sm shadow-sm mt-1">
-                            {message.payload}
-                          </div>
-                        </div>
-                      </div>
-                    ) : idx !== 0 ? (
-                      <div className="bg-white  px-1 rounded-sm shadow-sm ml-12">
-                        {message.payload}
-                      </div>
-                    ) : null}
-                  </div>
-                ) : (
-                  <div key={message.id} className="flex justify-end">
-                    <div className="bg-yellow-300 px-1 rounded-sm shadow-sm">
-                      {message.payload}
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-            <div className="flex w-[480px] fixed bottom-0 ">
-              <textarea className="w-full h-28 resize-none" cols={5} />
+            <Message
+              messages={data?.readMessages.messages}
+              meId={meData?.whoAmI.id}
+            />
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex w-[480px] fixed bottom-0 "
+            >
+              <textarea
+                {...register("payload", { required: true })}
+                className="w-full h-28 resize-none p-1"
+                cols={5}
+              />
               <button className="bg-yellow-300  text-sm w-12 h-7 absolute right-2 top-1">
-                <span>전송</span>
+                <div className="flex justify-center items-center">
+                  {sendMessageLoading ? (
+                    <div className="ml-4">
+                      <LoadingSpiner />{" "}
+                    </div>
+                  ) : (
+                    "전송"
+                  )}
+                </div>
               </button>
-            </div>
+            </form>
           </div>
         )}
       </div>
