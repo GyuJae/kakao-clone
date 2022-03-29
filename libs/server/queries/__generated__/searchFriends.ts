@@ -18,6 +18,7 @@ export interface searchFriends_searchFriends_users {
   bgImg: string | null;
   isMe: boolean;
   isMyFriend: boolean;
+  email: string;
 }
 
 export interface searchFriends_searchFriends {

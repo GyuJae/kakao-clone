@@ -3,7 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { takeMessage_takeMessage } from "@libs/server/subscriptions/__generated__/takeMessage";
 import { ReadMessagesInput } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
@@ -31,7 +30,6 @@ export interface readMessages_readMessages {
 }
 
 export interface readMessages {
-  takeMessage: takeMessage_takeMessage;
   readMessages: readMessages_readMessages;
 }
 

@@ -16,6 +16,7 @@ export interface whoAmI_whoAmI {
   bgImg: string | null;
   isMe: boolean;
   isMyFriend: boolean;
+  email: string;
 }
 
 export interface whoAmI {

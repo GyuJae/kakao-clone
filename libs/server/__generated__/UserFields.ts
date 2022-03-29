@@ -16,4 +16,5 @@ export interface UserFields {
   bgImg: string | null;
   isMe: boolean;
   isMyFriend: boolean;
+  email: string;
 }

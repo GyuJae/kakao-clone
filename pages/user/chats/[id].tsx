@@ -73,6 +73,7 @@ const ChatDetail: NextPage = () => {
       variables: { input: { roomId: +(id as string) } },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
+        //@ts-ignore
         const newMessage = subscriptionData.data.takeMessage;
         return Object.assign({}, prev, {
           readMessages: {

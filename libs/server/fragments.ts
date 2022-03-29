@@ -9,5 +9,6 @@ export const USER_FIELDS = gql`
     bgImg
     isMe
     isMyFriend
+    email
   }
 `;

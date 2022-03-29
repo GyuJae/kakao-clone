@@ -16,9 +16,6 @@ async function handler(
   res: NextApiResponse<IFilesResponse>
 ) {
   try {
-    if (req.method !== "POST") {
-      throw new Error("Method Error");
-    }
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/images/v2/direct_upload`,
       {
@@ -32,16 +29,17 @@ async function handler(
       .catch((err) => {
         throw new Error(err.message);
       });
-    console.log(response);
-    return {
+
+    return res.json({
       ok: true,
-    };
+      ...response.result,
+    });
   } catch (error) {
     const err = error as SystemError;
-    return {
+    return res.json({
       ok: false,
       error: err.message,
-    };
+    });
   }
 }
 

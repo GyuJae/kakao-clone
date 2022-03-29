@@ -16,6 +16,7 @@ export interface seeFriends_seeFriends_friends {
   bgImg: string | null;
   isMe: boolean;
   isMyFriend: boolean;
+  email: string;
 }
 
 export interface seeFriends_seeFriends {

@@ -21,6 +21,13 @@ export interface CreateRoomInput {
   userIds: number[];
 }
 
+export interface EditProfileInput {
+  name?: string | null;
+  avatar?: string | null;
+  statusMessage?: string | null;
+  bgImg?: string | null;
+}
+
 export interface LoginInput {
   email: string;
   password: string;
